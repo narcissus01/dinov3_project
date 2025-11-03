@@ -22,6 +22,10 @@ from dinov3.eval.segmentation.schedulers import build_scheduler
 from dinov3.eval.segmentation.transforms import make_segmentation_eval_transforms, make_segmentation_train_transforms
 from dinov3.logging import MetricLogger, SmoothedValue
 
+from dinov3.models.vision_transformer import vit_base
+import yaml
+from types import SimpleNamespace
+
 logger = logging.getLogger("dinov3")
 
 
@@ -325,3 +329,25 @@ def train_segmentation(
     )
     logger.info(f"Final best metrics: {global_best_metric_values}")
     return global_best_metric_values
+
+def build_backbone():
+    model = vit_base(patch_size=16)
+    ckpt = "/mnt/afs/wusize/models/weivision_dinov3/dinov3_vit7b16_pretrain_lvd1689m-a955f4ea.pth"
+    load_pretrained_weights(model, ckpt, "teacher")
+    model.eval()
+    for p in model.parameters():
+        p.requires_grad = False
+    return model
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=str, required=True)
+    args = parser.parse_args()
+
+    with open(args.config, "r") as f:
+        cfg = yaml.safe_load(f)
+    cfg = SimpleNamespace(**cfg)
+
+    backbone = build_backbone()
+    train_segmentation(backbone, cfg)

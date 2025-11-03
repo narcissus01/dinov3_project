@@ -1,7 +1,7 @@
 # Config for ade20k, linear training
 
-bs: 2
-n_gpus: 8
+bs: 4
+n_gpus: 4
 metric_to_save: 'mIoU'
 model_dtype: FLOAT32
 scheduler:
@@ -22,7 +22,7 @@ optimizer:
   weight_decay: 1e-3
   gradient_clip: 'inf'
 datasets:
-  root: ""  # Path to the ADE20K dataset
+  root: "/mnt/afs/wusize/projects/dinov3/dinov3/data/ADE20K"  # Path to the ADE20K dataset
   train: "ADE20K:split=TRAIN"
   val: "ADE20K:split=VAL"
 train:

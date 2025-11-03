@@ -1,0 +1,111 @@
+I20251016 15:00:44 670288 dinov3 torch_distributed_wrapper.py:255] PyTorch distributed environment: TorchElastic job (none) using 127.0.0.1:29500 (rank=3, world size=4)
+W20251016 15:00:44 670288 py.warnings warnings.py:109] /mnt/afs/wusize/envs/dinov3/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py:4807: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+
+I20251016 15:00:44 670288 dinov3 config.py:209] git:
+  sha: cb054165e9ec6bd86dbae674416eb36c8349adcb, status: has uncommited changes, branch: main
+
+I20251016 15:00:44 670288 dinov3 config.py:213] conda env name: dinov3
+I20251016 15:00:44 670288 dinov3 config.py:214] conda env path: /mnt/afs/wusize/envs/dinov3
+I20251016 15:00:44 670288 dinov3 config.py:215] python path: ['/mnt/afs/wusize/projects/dinov3/dinov3/eval/segmentation', '/mnt/afs/wusize/projects/dinov3', '/mnt/afs/wusize/envs/dinov3/lib/python310.zip', '/mnt/afs/wusize/envs/dinov3/lib/python3.10', '/mnt/afs/wusize/envs/dinov3/lib/python3.10/lib-dynload', '/mnt/afs/wusize/envs/dinov3/lib/python3.10/site-packages', '/tmp/tmpv625b6qo']
+I20251016 15:00:44 670288 dinov3 vision_transformer.py:116] using base=100 for rope new
+I20251016 15:00:44 670288 dinov3 vision_transformer.py:117] using min_period=None for rope new
+I20251016 15:00:44 670288 dinov3 vision_transformer.py:118] using max_period=None for rope new
+I20251016 15:00:44 670288 dinov3 vision_transformer.py:119] using normalize_coords=separate for rope new
+I20251016 15:00:44 670288 dinov3 vision_transformer.py:120] using shift_coords=None for rope new
+I20251016 15:00:44 670288 dinov3 vision_transformer.py:121] using rescale_coords=2 for rope new
+I20251016 15:00:44 670288 dinov3 vision_transformer.py:122] using jitter_coords=None for rope new
+I20251016 15:00:44 670288 dinov3 vision_transformer.py:123] using dtype=fp32 for rope new
+I20251016 15:00:44 670288 dinov3 vision_transformer.py:137] using swiglu64 layer as FFN
+I20251016 15:01:46 670288 dinov3 run.py:58] Segmentation Config:
+model:
+  config_file: null
+  pretrained_weights: null
+  dino_hub: dinov3_vit7b16
+bs: 4
+n_gpus: 4
+num_workers: 6
+model_dtype: FLOAT32
+seed: 100
+datasets:
+  root: /mnt/afs/wusize/projects/dinov3/dinov3/data/ADE20K
+  train: ADE20K:split=TRAIN
+  val: ADE20K:split=VAL
+metric_to_save: mIoU
+decoder_head:
+  type: linear
+  backbone_out_layers: LAST
+  use_batchnorm: true
+  use_cls_token: false
+  use_backbone_norm: true
+  num_classes: 150
+  hidden_dim: 2048
+scheduler:
+  type: WarmupOneCycleLR
+  total_iter: 40000
+  constructor_kwargs:
+    warmup_iters: 1500
+    warmup_ratio: 1.0e-06
+    final_div_factor: .inf
+    pct_start: 0
+    anneal_strategy: cos
+    use_beta1: false
+    update_momentum: false
+optimizer:
+  lr: 0.001
+  beta1: 0.9
+  beta2: 0.999
+  weight_decay: 0.001
+  gradient_clip: .inf
+transforms:
+  train:
+    img_size: 512
+    random_img_size_ratio_range:
+    - 0.5
+    - 2.0
+    crop_size:
+    - 512
+    - 512
+    flip_prob: 0.5
+  eval:
+    img_size: 512
+    tta_ratios:
+    - 1.0
+  mean:
+  - 123.675
+  - 116.28
+  - 103.53
+  std:
+  - 58.395
+  - 57.120000000000005
+  - 57.375
+train:
+  diceloss_weight: 0.0
+  celoss_weight: 1.0
+eval:
+  compute_metric_per_image: false
+  reduce_zero_label: true
+  mode: slide
+  crop_size: 512
+  stride: 341
+  eval_interval: 5000
+  use_tta: false
+output_dir: /mnt/afs/wusize/projects/dinov3/outputs/ade20k_linear
+load_from: null
+
+I20251016 15:01:46 670288 dinov3 train.py:156] Initializing the segmentation model
+I20251016 15:01:47 670288 dinov3 train.py:170] Number of trainable parameters: 622742
+I20251016 15:01:47 670288 dinov3 loaders.py:96] using dataset: "ADE20K:split=TRAIN:root=/mnt/afs/wusize/projects/dinov3/dinov3/data/ADE20K"
+I20251016 15:01:47 670288 dinov3 loaders.py:101] # of dataset samples: 20,210
+I20251016 15:01:47 670288 dinov3 loaders.py:160] sampler: distributed
+I20251016 15:01:47 670288 dinov3 loaders.py:220] using PyTorch data loader
+I20251016 15:01:47 670288 dinov3 loaders.py:234] # of batches: 1,263
+I20251016 15:01:47 670288 dinov3 loaders.py:96] using dataset: "ADE20K:split=VAL:root=/mnt/afs/wusize/projects/dinov3/dinov3/data/ADE20K"
+I20251016 15:01:47 670288 dinov3 loaders.py:101] # of dataset samples: 2,000
+I20251016 15:01:47 670288 dinov3 loaders.py:160] sampler: distributed
+I20251016 15:01:47 670288 dinov3 loaders.py:220] using PyTorch data loader
+I20251016 15:01:47 670288 dinov3 loaders.py:234] # of batches: 500
+I20251016 15:01:51 670288 dinov3 helpers.py:105] Train:   [    0/40000]  eta: 1 day, 21:08:41  loss: 2.933  time: 4.063045  data: 0.146141  mem: 25641  (max mem: 28181)
+I20251016 15:04:34 670288 dinov3 helpers.py:105] Train:   [   50/40000]  eta: 1 day, 12:24:01  loss: 4.086  time: 3.263866  data: 0.000126  mem: 25641  (max mem: 28187)
+I20251016 15:07:18 670288 dinov3 helpers.py:105] Train:   [  100/40000]  eta: 1 day, 12:15:46  loss: 2.411  time: 3.263607  data: 0.000126  mem: 25641  (max mem: 28187)
+I20251016 15:10:01 670288 dinov3 helpers.py:105] Train:   [  150/40000]  eta: 1 day, 12:11:14  loss: 1.678  time: 3.263427  data: 0.000127  mem: 25641  (max mem: 28187)

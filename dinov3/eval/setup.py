@@ -5,7 +5,7 @@
 
 from dataclasses import dataclass
 from typing import Tuple, TypedDict
-
+import os
 import torch
 import torch.backends.cudnn as cudnn
 import torch.nn as nn
@@ -33,14 +33,19 @@ class BaseModelContext(TypedDict):
 
 def load_model_and_context(model_config: ModelConfig, output_dir: str) -> tuple[torch.nn.Module, BaseModelContext]:
     if model_config.dino_hub is not None:
-        assert model_config.pretrained_weights is None and model_config.config_file is None
+        # assert model_config.pretrained_weights is None and model_config.config_file is None
+        assert model_config.config_file is None
         if "dinov3" in model_config.dino_hub:
             repo = "dinov3"
         elif "dinov2" in model_config.dino_hub:
             repo = "dinov2"
         else:
             raise ValueError
-        model = torch.hub.load(f"facebookresearch/{repo}", model_config.dino_hub)
+
+        REPO = os.getenv('DINOV3_REPO')
+        WEIGHTS = os.getenv('DINOV3_WEIGHTS')
+        model = torch.hub.load(REPO, model_config.dino_hub, source='local', weights=WEIGHTS)
+        # model = torch.hub.load(REPO,  model_config.dino_hub)
         base_model_context = BaseModelContext(autocast_dtype=torch.float)
     else:
         model, base_model_context = setup_and_build_model(
